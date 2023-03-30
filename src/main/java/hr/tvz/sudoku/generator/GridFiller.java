@@ -2,6 +2,8 @@ package hr.tvz.sudoku.generator;
 
 import javafx.scene.control.TextField;
 
+import java.util.Random;
+
 class GridFiller {
 
 	private final TextField[][] boxes;
@@ -9,6 +11,7 @@ class GridFiller {
 	private final int size; // number of columns/rows
 	private final int sizeSqrt;
 	private final int emptyBoxes; // number of missing digits
+	private final Random randomGenerator = new Random();
 
 	GridFiller(TextField[][] boxes, int emptyBoxes) {
 		this.boxes = boxes;
@@ -24,7 +27,7 @@ class GridFiller {
 		fillRemaining(0, sizeSqrt);
 		removeDigits();
 		fillBoxes();
-		// TODO return mat to beginning state
+		// return mat to beginning state if reused
 	}
 
 	// Fill the diagonal sizeSqrt number of sizeSqrt x sizeSqrt matrices
@@ -40,7 +43,7 @@ class GridFiller {
 		for (int i = 0; i < sizeSqrt; i++) {
 			for (int j = 0; j < sizeSqrt; j++) {
 				do {
-					num = randomGenerator(size);
+					num = randomGenerator.nextInt(size+1);
 				} while (!unusedInRegion(indexOfFirst, indexOfFirst, num));
 
 				mat[indexOfFirst + i][indexOfFirst + j] = num;
@@ -55,10 +58,6 @@ class GridFiller {
 				if (mat[rowStart + i][colStart + j] == num) return false;
 
 		return true;
-	}
-
-	private int randomGenerator(int num) {
-		return (int) Math.floor((Math.random() * num + 1)); //TODO use randint
 	}
 
 	// Check if safe to put in cell
@@ -117,7 +116,7 @@ class GridFiller {
 	private void removeDigits() {
 		int count = emptyBoxes;
 		while (count != 0) {
-			int cellId = randomGenerator(size * size) - 1;
+			int cellId = randomGenerator.nextInt(size*size);
 
 			int i = (cellId / size);
 			int j = cellId % size;
