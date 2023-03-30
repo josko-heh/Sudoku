@@ -14,7 +14,6 @@ public class SudokuApp extends Application {
 
 	@Override
 	public void start(Stage stage) {
-				
 		Scene scene = new Scene(Generator.generateBoard());
 		stage.setTitle("Sudoku");
 		stage.setScene(scene);

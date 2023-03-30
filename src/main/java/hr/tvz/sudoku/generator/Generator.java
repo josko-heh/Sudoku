@@ -12,6 +12,7 @@ public class Generator {
 
 	private static final int SIZE = 16;
 	private static final int SIZE_SQRT = (int) Math.sqrt(SIZE);
+	private static final int EMPTY_BOXES = 20;
 	private static final BorderWidths bottomRight = new BorderWidths(1, 3, 3, 1);
 	private static final BorderWidths bottom = new BorderWidths(1, 1, 3, 1);
 	private static final BorderWidths right = new BorderWidths(1, 3, 1, 1);
@@ -32,6 +33,7 @@ public class Generator {
 			for (int j = 0; j < boxes.length; j++) {
 				board.add(boxes[i][j], j, i);
 
+				// keep 1:1 aspect ratio while resizing
 				boxes[i][j].prefWidthProperty().bind(
 						Bindings.min(board.widthProperty().divide(SIZE),
 						board.heightProperty().divide(SIZE)));
@@ -56,7 +58,7 @@ public class Generator {
 					@Override
 					public void changed(ObservableValue<? extends String> observable, 
 										String oldValue, String newValue) {
-						if (!newValue.matches("\\d")) {
+						if (!isValidInputValue(newValue)) {
 							box.textProperty().removeListener(this);
 							box.setText(oldValue);
 							box.textProperty().addListener(this);
@@ -73,6 +75,9 @@ public class Generator {
 				boxes[row][col] = box;
 			}
 		}
+
+		GridFiller filler = new GridFiller(boxes, EMPTY_BOXES);
+		filler.fill();
 		
 		return boxes;
 	}
@@ -88,5 +93,16 @@ public class Generator {
 			boxWidths = bottom;
 		
 		return boxWidths;
+	}
+	
+	private static boolean isValidInputValue(String val) {
+		int intVal;
+		try {
+			intVal = Integer.parseInt(val);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+
+		return intVal <= SIZE && intVal > 0;
 	}
 }
