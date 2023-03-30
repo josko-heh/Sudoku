@@ -67,7 +67,7 @@ public class Generator {
 				});
 
 				box.setBorder(new Border(
-					new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, getBorderWidths(row, col))));
+					new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, determineBoxBorderWidths(row, col))));
 				box.setMinSize(35, 35);
 				box.setMaxSize(55, 55);
 				box.setAlignment(Pos.CENTER);
@@ -82,7 +82,7 @@ public class Generator {
 		return boxes;
 	}
 
-	private static BorderWidths getBorderWidths(int row, int col) {
+	private static BorderWidths determineBoxBorderWidths(int row, int col) {
 		BorderWidths boxWidths = noBorder;
 
 		if (row % SIZE_SQRT == SIZE_SQRT-1 && col % SIZE_SQRT == SIZE_SQRT-1 && col != SIZE -1 && row != SIZE -1)
