@@ -3,6 +3,7 @@ package hr.tvz.sudoku.components.board;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
@@ -25,6 +26,8 @@ public class Generator {
 		boxes = new TextField[size][size];
 		boardStyler = new BoardStyler(boxes, board.widthProperty(), board.heightProperty());
 		filler = new BoardFiller(boxes, emptyBoxes);
+		
+		initializeBoxes();
 	}
 	
 	
@@ -33,10 +36,13 @@ public class Generator {
 		board.setHgap(0);
 		board.setAlignment(Pos.CENTER);
 
-		generateBoxes();
 		filler.fill();
 		boardStyler.set();
 		disableInitialDigits();
+
+		Label correctCountLabel = new Label(String.valueOf(filler.getCorrectBoxes()));
+		board.add(correctCountLabel, boxes.length, boxes.length);
+		addBoxesInputListener(correctCountLabel);
 
 		for (int i = 0; i < boxes.length; i++) {
 			for (int j = 0; j < boxes.length; j++) {
@@ -47,25 +53,10 @@ public class Generator {
 		return board;
 	}
 	
-	private void generateBoxes() {
+	private void initializeBoxes() {
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++) {
-
-				TextField box = new TextField();
-
-				box.textProperty().addListener(new ChangeListener<>() {
-					@Override
-					public void changed(ObservableValue<? extends String> observable, 
-										String oldValue, String newValue) {
-						if (!isValidInputValue(newValue)) {
-							box.textProperty().removeListener(this);
-							box.setText(oldValue);
-							box.textProperty().addListener(this);
-						}
-					}
-				});
-				
-				boxes[row][col] = box;
+				boxes[row][col] = new TextField();
 			}
 		}
 	}
@@ -90,5 +81,23 @@ public class Generator {
 					blankBox.setMouseTransparent(true);
 					blankBox.setFocusTraversable(false);
 				});
+	}
+	
+	private void addBoxesInputListener(Label correctCountLabel) {
+		Arrays.stream(boxes)
+			.flatMap(Arrays::stream)
+			.filter(field -> isBlank(field.getText()))
+			.forEach(box -> box.textProperty().addListener(new ChangeListener<>() {
+				@Override
+				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+					if (!isValidInputValue(newValue)) {
+						box.textProperty().removeListener(this);
+						box.setText(oldValue);
+						box.textProperty().addListener(this);
+					} else
+						correctCountLabel.setText(String.valueOf(filler.getCorrectBoxes()));
+				}
+			}));
+
 	}
 }

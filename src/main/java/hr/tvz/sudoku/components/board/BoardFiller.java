@@ -4,6 +4,8 @@ import javafx.scene.control.TextField;
 
 import java.util.Random;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 class BoardFiller {
 
 	private final TextField[][] boxes;
@@ -26,11 +28,26 @@ class BoardFiller {
 			this.emptyBoxes = emptyBoxes;
 	}
 
+	int getCorrectBoxes() {
+		int count = 0;
+		
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				try {
+					if (mat[i][j] == Integer.parseInt(boxes[i][j].getText()))
+						count++;
+				} catch (NumberFormatException ignored) { }
+			}
+		}
+		
+		return count;
+	}
+	
 	void fill() {
 		fillDiagonal();
 		fillRemaining(0, sizeSqrt);
-		removeDigits();
 		fillBoxes();
+		removeDigits();
 		// return mat to beginning state if reused
 	}
 
@@ -125,9 +142,9 @@ class BoardFiller {
 			int i = (cellId / size);
 			int j = cellId % size;
 			
-			if (mat[i][j] != 0) {
+			if (!isBlank(boxes[i][j].getText())) {
 				count--;
-				mat[i][j] = 0;
+				boxes[i][j].setText("");
 			}
 		}
 	}
