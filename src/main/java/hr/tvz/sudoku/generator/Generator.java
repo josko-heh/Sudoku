@@ -6,6 +6,10 @@ import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
+import java.util.Arrays;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 public class Generator {
 
 	private final int size;
@@ -32,6 +36,7 @@ public class Generator {
 		generateBoxes();
 		filler.fill();
 		styling.set();
+		disableInitialDigits();
 
 		for (int i = 0; i < boxes.length; i++) {
 			for (int j = 0; j < boxes.length; j++) {
@@ -74,5 +79,16 @@ public class Generator {
 		}
 
 		return intVal <= size && intVal > 0;
+	}
+	
+	private void disableInitialDigits() {
+		Arrays.stream(boxes)
+				.flatMap(Arrays::stream)
+				.filter(field -> !isBlank(field.getText()))
+				.forEach(blankBox -> {
+					blankBox.setEditable(false);
+					blankBox.setMouseTransparent(true);
+					blankBox.setFocusTraversable(false);
+				});
 	}
 }
