@@ -1,4 +1,4 @@
-package hr.tvz.sudoku.generator;
+package hr.tvz.sudoku.components.board;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,7 +15,7 @@ public class Generator {
 	private final int size;
 	private final GridPane board;
 	private final TextField[][] boxes;
-	private final Styling styling;
+	private final BoardStyler boardStyler;
 	private final BoardFiller filler;
 	
 	public Generator(int size, int emptyBoxes) {
@@ -23,7 +23,7 @@ public class Generator {
 
 		board = new GridPane();
 		boxes = new TextField[size][size];
-		styling = new Styling(boxes, board.widthProperty(), board.heightProperty());
+		boardStyler = new BoardStyler(boxes, board.widthProperty(), board.heightProperty());
 		filler = new BoardFiller(boxes, emptyBoxes);
 	}
 	
@@ -35,7 +35,7 @@ public class Generator {
 
 		generateBoxes();
 		filler.fill();
-		styling.set();
+		boardStyler.set();
 		disableInitialDigits();
 
 		for (int i = 0; i < boxes.length; i++) {

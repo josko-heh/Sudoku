@@ -1,19 +1,19 @@
-package hr.tvz.sudoku.generator;
+package hr.tvz.sudoku.components.board;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import java.util.Arrays;
 
+import static hr.tvz.sudoku.util.Styling.addStyle;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-class Styling {
+class BoardStyler {
 
 	private static final BorderWidths bottomRight = new BorderWidths(1, 3, 3, 1);
 	private static final BorderWidths bottom = new BorderWidths(1, 1, 3, 1);
@@ -26,7 +26,7 @@ class Styling {
 	private final ReadOnlyDoubleProperty parentWidth;
 	private final ReadOnlyDoubleProperty parentHeight;
 
-	Styling(TextField[][] boxes, ReadOnlyDoubleProperty parentWidth, ReadOnlyDoubleProperty parentHeight) {
+	BoardStyler(TextField[][] boxes, ReadOnlyDoubleProperty parentWidth, ReadOnlyDoubleProperty parentHeight) {
 		this.boxes = boxes;
 		this.parentWidth = parentWidth;
 		this.parentHeight = parentHeight;
@@ -87,9 +87,5 @@ class Styling {
 			boxWidths = bottom;
 
 		return boxWidths;
-	}
-
-	private static void addStyle(Node node, String style) {
-		node.setStyle(node.getStyle() + " " + style);
 	}
 }

@@ -1,4 +1,4 @@
-package hr.tvz.sudoku.generator;
+package hr.tvz.sudoku.components.board;
 
 import javafx.scene.control.TextField;
 
@@ -15,11 +15,15 @@ class BoardFiller {
 
 	BoardFiller(TextField[][] boxes, int emptyBoxes) {
 		this.boxes = boxes;
-		this.emptyBoxes = emptyBoxes;
 		
 		this.size = boxes.length;
 		this.sizeSqrt = (int) Math.sqrt(size);
 		this.mat = new int[size][size];
+		
+		if (emptyBoxes > size*size)
+			this.emptyBoxes = size;
+		else
+			this.emptyBoxes = emptyBoxes;
 	}
 
 	void fill() {
