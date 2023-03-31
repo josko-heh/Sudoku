@@ -4,7 +4,7 @@ import javafx.scene.control.TextField;
 
 import java.util.Random;
 
-class GridFiller {
+class BoardFiller {
 
 	private final TextField[][] boxes;
 	private final int[][] mat;
@@ -13,7 +13,7 @@ class GridFiller {
 	private final int emptyBoxes; // number of missing digits
 	private final Random randomGenerator = new Random();
 
-	GridFiller(TextField[][] boxes, int emptyBoxes) {
+	BoardFiller(TextField[][] boxes, int emptyBoxes) {
 		this.boxes = boxes;
 		this.emptyBoxes = emptyBoxes;
 		
