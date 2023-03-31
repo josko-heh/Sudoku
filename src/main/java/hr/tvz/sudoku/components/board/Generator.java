@@ -100,4 +100,9 @@ public class Generator {
 			}));
 
 	}
+
+	
+	public TextField[][] getBoxes() {
+		return boxes;
+	}
 }
