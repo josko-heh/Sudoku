@@ -4,7 +4,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 import java.util.Arrays;
@@ -15,48 +14,70 @@ public class Generator {
 
 	private final int size;
 	private final GridPane board;
-	private final TextField[][] boxes;
+	private final IntField[][] boxes;
+	private final int[][] solution;
 	private final BoardStyler boardStyler;
 	private final BoardFiller filler;
-	
+	private final Label correctCountLabel;
+
 	public Generator(int size, int emptyBoxes) {
 		this.size = size;
 
 		board = new GridPane();
-		boxes = new TextField[size][size];
+		prepareBoard();
+		boxes = new IntField[size][size];
 		boardStyler = new BoardStyler(boxes, board.widthProperty(), board.heightProperty());
 		filler = new BoardFiller(boxes, emptyBoxes);
-		
+		correctCountLabel = new Label();
+
+		board.add(correctCountLabel, boxes.length, boxes.length);
 		initializeBoxes();
+		filler.fill();
+		boardStyler.style();
+		disableInitialDigits();
+		fillBoardWithBoxes();
+		solution = filler.getSolution();
+		addBoxesInputListener();
+	}
+
+	public Generator(GameState state) {
+		solution = state.getSolution();
+		
+		size = solution.length;
+		board = new GridPane();
+		prepareBoard();
+		boxes = new IntField[size][size];
+		boardStyler = new BoardStyler(boxes, board.widthProperty(), board.heightProperty());
+		filler = null;
+		correctCountLabel = new Label();
+
+		board.add(correctCountLabel, boxes.length, boxes.length);
+		initializeBoxes(state.getCurrent());
+		boardStyler.style();
+		disableInitialDigits();
+		addBoxesInputListener();
+		fillBoardWithBoxes();
 	}
 	
 	
-	public GridPane generateBoard() {
+	private void prepareBoard() {
 		board.setVgap(0);
 		board.setHgap(0);
 		board.setAlignment(Pos.CENTER);
-
-		filler.fill();
-		boardStyler.set();
-		disableInitialDigits();
-
-		Label correctCountLabel = new Label(String.valueOf(filler.getCorrectBoxes()));
-		board.add(correctCountLabel, boxes.length, boxes.length);
-		addBoxesInputListener(correctCountLabel);
-
-		for (int i = 0; i < boxes.length; i++) {
-			for (int j = 0; j < boxes.length; j++) {
-				board.add(boxes[i][j], j, i);
-			}
-		}
-		
-		return board;
 	}
-	
+
 	private void initializeBoxes() {
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++) {
-				boxes[row][col] = new TextField();
+				boxes[row][col] = new IntField();
+			}
+		}
+	}
+
+	private void initializeBoxes(int[][] digits) {
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
+				boxes[row][col] = new IntField(digits[row][col]);
 			}
 		}
 	}
@@ -83,10 +104,10 @@ public class Generator {
 				});
 	}
 	
-	private void addBoxesInputListener(Label correctCountLabel) {
+	private void addBoxesInputListener() {
 		Arrays.stream(boxes)
 			.flatMap(Arrays::stream)
-			.filter(field -> isBlank(field.getText()))
+			.filter(field -> field.getValue() == 0)
 			.forEach(box -> box.textProperty().addListener(new ChangeListener<>() {
 				@Override
 				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -95,14 +116,51 @@ public class Generator {
 						box.setText(oldValue);
 						box.textProperty().addListener(this);
 					} else
-						correctCountLabel.setText(String.valueOf(filler.getCorrectBoxes()));
+						correctCountLabel.setText(String.valueOf(getCorrectBoxes()));
 				}
 			}));
-
 	}
 
+	private void fillBoardWithBoxes() {
+		for (int i = 0; i < boxes.length; i++) {
+			for (int j = 0; j < boxes.length; j++) {
+				board.add(boxes[i][j], j, i);
+			}
+		}
+	}
+
+	private int getCorrectBoxes() {
+		int count = 0;
+
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				try {
+					if (solution[i][j] == boxes[i][j].getValue())
+						count++;
+				} catch (NumberFormatException ignored) { }
+			}
+		}
+
+		return count;
+	}
+
+	private int[][] getCurrentDigits() {
+		int[][] current = new int[size][size];
+
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				current[i][j] = boxes[i][j].getValue();
+			}
+		}
+		
+		return current;
+	}
 	
-	public TextField[][] getBoxes() {
-		return boxes;
+	public GameState getState() {
+		return new GameState(getCurrentDigits(), solution);
+	}
+
+	public GridPane getBoard() {
+		return board;
 	}
 }

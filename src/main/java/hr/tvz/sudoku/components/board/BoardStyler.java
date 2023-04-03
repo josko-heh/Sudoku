@@ -35,7 +35,7 @@ class BoardStyler {
 		sizeSqrt = (int) Math.sqrt(size);
 	}
 
-	void set(){
+	void style(){
 		setBoxesStyling();
 		setDigitsColorInFilledBoard();
 		setSize();

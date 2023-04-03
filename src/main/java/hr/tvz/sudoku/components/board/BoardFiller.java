@@ -1,46 +1,28 @@
 package hr.tvz.sudoku.components.board;
 
-import javafx.scene.control.TextField;
 
 import java.util.Random;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 class BoardFiller {
 
-	private final TextField[][] boxes;
-	private final int[][] mat;
+	private final IntField[][] boxes;
+	private final int[][] solution;
 	private final int size; // number of columns/rows
 	private final int sizeSqrt;
 	private final int emptyBoxes; // number of missing digits
 	private final Random randomGenerator = new Random();
 
-	BoardFiller(TextField[][] boxes, int emptyBoxes) {
+	BoardFiller(IntField[][] boxes, int emptyBoxes) {
 		this.boxes = boxes;
 		
 		this.size = boxes.length;
 		this.sizeSqrt = (int) Math.sqrt(size);
-		this.mat = new int[size][size];
+		this.solution = new int[size][size];
 		
 		if (emptyBoxes > size*size)
 			this.emptyBoxes = size;
 		else
 			this.emptyBoxes = emptyBoxes;
-	}
-
-	int getCorrectBoxes() {
-		int count = 0;
-		
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				try {
-					if (mat[i][j] == Integer.parseInt(boxes[i][j].getText()))
-						count++;
-				} catch (NumberFormatException ignored) { }
-			}
-		}
-		
-		return count;
 	}
 	
 	void fill() {
@@ -48,7 +30,6 @@ class BoardFiller {
 		fillRemaining(0, sizeSqrt);
 		fillBoxes();
 		removeDigits();
-		// return mat to beginning state if reused
 	}
 
 	// Fill the diagonal sizeSqrt number of sizeSqrt x sizeSqrt matrices
@@ -67,7 +48,7 @@ class BoardFiller {
 					num = randomGenerator.nextInt(size+1);
 				} while (!unusedInRegion(indexOfFirst, indexOfFirst, num));
 
-				mat[indexOfFirst + i][indexOfFirst + j] = num;
+				solution[indexOfFirst + i][indexOfFirst + j] = num;
 			}
 		}
 	}
@@ -76,7 +57,7 @@ class BoardFiller {
 	private boolean unusedInRegion(int rowStart, int colStart, int num) {
 		for (int i = 0; i < sizeSqrt; i++)
 			for (int j = 0; j < sizeSqrt; j++)
-				if (mat[rowStart + i][colStart + j] == num) return false;
+				if (solution[rowStart + i][colStart + j] == num) return false;
 
 		return true;
 	}
@@ -90,14 +71,14 @@ class BoardFiller {
 	// Check in the row for existence
 	private boolean unusedInRow(int i, int num) {
 		for (int j = 0; j < size; j++)
-			if (mat[i][j] == num) return false;
+			if (solution[i][j] == num) return false;
 		return true;
 	}
 
 	// Check in the row for existence
 	private boolean unusedInCol(int j, int num) {
 		for (int i = 0; i < size; i++)
-			if (mat[i][j] == num) return false;
+			if (solution[i][j] == num) return false;
 		return true;
 	}
 
@@ -123,10 +104,10 @@ class BoardFiller {
 
 		for (int num = 1; num <= size; num++) {
 			if (checkIfSafe(i, j, num)) {
-				mat[i][j] = num;
+				solution[i][j] = num;
 				if (fillRemaining(i, j + 1))
 					return true;
-				mat[i][j] = 0;
+				solution[i][j] = 0;
 			}
 		}
 		
@@ -142,22 +123,23 @@ class BoardFiller {
 			int i = (cellId / size);
 			int j = cellId % size;
 			
-			if (!isBlank(boxes[i][j].getText())) {
+			if (boxes[i][j].getValue() != 0) {
 				count--;
-				boxes[i][j].setText("");
+				boxes[i][j].setValue(0);
 			}
 		}
 	}
 
-	// Copy numbers from mat to boxes
+	// Copy numbers from solution to boxes
 	private void fillBoxes() {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				if (mat[i][j] == 0)
-					boxes[i][j].setText("");
-				else 
-					boxes[i][j].setText(String.valueOf(mat[i][j]));
+				boxes[i][j].setValue(solution[i][j]);
 			}
 		}
+	}
+
+	int[][] getSolution() {
+		return solution;
 	}
 }

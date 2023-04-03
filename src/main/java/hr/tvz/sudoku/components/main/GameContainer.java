@@ -9,22 +9,29 @@ import javafx.scene.layout.Pane;
 
 public class GameContainer {
 	
-	private final Generator generator;
+	private Generator generator;
 
 	public GameContainer(int size, int emptyBoxes) {
 		this.generator = new Generator(size, emptyBoxes);
 	}
 
 	public Pane generate() {
-		Button saveButton = new Button("Save");
-		saveButton.setOnAction(event -> SaveHandler.save(generator));
-		
-		ToolBar toolBar = new ToolBar(saveButton);
-		
 		BorderPane pane = new BorderPane();
-		pane.setCenter(generator.generateBoard());
-		pane.setTop(toolBar);
 
+		Button saveButton = new Button("Save");
+		saveButton.setOnAction(event -> SaveHandler.save(generator.getState()));
+		Button loadButton = new Button("Load");
+		loadButton.setOnAction(event -> SaveHandler.load().ifPresent(loadedGenerator -> {
+			generator = loadedGenerator;
+			pane.setCenter(generator.getBoard());
+		}));
+
+		ToolBar toolBar = new ToolBar(saveButton, loadButton);
+
+		pane.setCenter(generator.getBoard());
+		pane.setTop(toolBar);
+		
 		return pane;
 	}
+	
 }

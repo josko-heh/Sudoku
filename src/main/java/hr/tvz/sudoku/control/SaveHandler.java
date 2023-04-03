@@ -1,11 +1,10 @@
 package hr.tvz.sudoku.control;
 
+import hr.tvz.sudoku.components.board.GameState;
 import hr.tvz.sudoku.components.board.Generator;
-import javafx.scene.control.TextField;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.util.Optional;
 
 import static hr.tvz.sudoku.util.InformUser.showMessage;
 
@@ -15,29 +14,27 @@ public class SaveHandler {
 	
 	private SaveHandler() {}
 	
-	public static void save(Generator generator) {
+	public static void save(GameState state) {
 		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SAVE_GAME_FILE_NAME)))
 		{
-			oos.writeObject(convert(generator.getBoxes()));
+			oos.writeObject(state);
 			showMessage("Save", "Successfully saved the game!", "");
 		} catch (IOException e) {
 			e.printStackTrace();
 			showMessage("Save", "Failed to save the game!", e.getMessage());
 		}
 	}
-	
-	private static BoxState[][] convert(TextField[][] boxes) {
-		int size = boxes.length;
-		BoxState[][] states = new BoxState[size][size];
 
+	public static Optional<Generator> load() {
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SAVE_GAME_FILE_NAME)))
+		{
+			GameState loadedState = (GameState) ois.readObject();
 
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				TextField box = boxes[i][j];
-				states[i][j] = new BoxState(box.getText(), box.getStyle());
-			}
+			return Optional.of(new Generator(loadedState));
+		} catch (IOException | ClassNotFoundException | ClassCastException e) {
+			e.printStackTrace();
+			showMessage("Load", "Failed to load the game!", e.getMessage());
+			return Optional.empty();
 		}
-		
-		return states;
 	}
 }
