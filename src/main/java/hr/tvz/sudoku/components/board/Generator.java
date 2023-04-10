@@ -135,7 +135,8 @@ public class Generator {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				try {
-					if (solution[i][j] == boxes[i][j].getValue())
+					int currValue = boxes[i][j].getValue();
+					if (currValue != 0 && solution[i][j] == currValue)
 						count++;
 				} catch (NumberFormatException ignored) { }
 			}
