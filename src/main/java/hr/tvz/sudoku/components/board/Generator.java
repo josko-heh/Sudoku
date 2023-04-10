@@ -59,6 +59,7 @@ public class Generator {
 		disableInitialDigits();
 		addBoxesInputListener();
 		fillBoardWithBoxes();
+		correctCountLabel.setText(String.valueOf(getCorrectBoxes()));
 	}
 
 
