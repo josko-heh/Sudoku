@@ -85,11 +85,11 @@ class BoardStyler {
 	private BorderWidths determineBoxBorderWidths(int row, int col) {
 		BorderWidths boxWidths = noBorder;
 
-		if (row % sizeSqrt == sizeSqrt-1 && col % sizeSqrt == sizeSqrt-1 && col != size -1 && row != size -1)
+		if (row % sizeSqrt == sizeSqrt - 1 && col % sizeSqrt == sizeSqrt - 1 && col != size - 1 && row != size - 1)
 			boxWidths = bottomRight;
-		else if (col % sizeSqrt == sizeSqrt-1 && col != size -1)
+		else if (col % sizeSqrt == sizeSqrt - 1 && col != size - 1)
 			boxWidths = right;
-		else if (row % sizeSqrt == sizeSqrt-1 && row != size -1)
+		else if (row % sizeSqrt == sizeSqrt - 1 && row != size - 1)
 			boxWidths = bottom;
 
 		return boxWidths;
