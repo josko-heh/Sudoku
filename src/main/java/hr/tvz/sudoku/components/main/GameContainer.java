@@ -2,6 +2,7 @@ package hr.tvz.sudoku.components.main;
 
 import hr.tvz.sudoku.components.board.Generator;
 import hr.tvz.sudoku.control.SaveHandler;
+import hr.tvz.sudoku.documentation.DocumentationGenerator;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
@@ -25,8 +26,10 @@ public class GameContainer {
 			generator = loadedGenerator;
 			pane.setCenter(generator.getBoard());
 		}));
+		Button docButton = new Button("Documentation");
+		docButton.setOnAction(event -> DocumentationGenerator.generate());
 
-		ToolBar toolBar = new ToolBar(saveButton, loadButton);
+		ToolBar toolBar = new ToolBar(saveButton, loadButton, docButton);
 
 		pane.setCenter(generator.getBoard());
 		pane.setTop(toolBar);
