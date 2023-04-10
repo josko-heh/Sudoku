@@ -4,11 +4,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
-import java.util.Arrays;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class Generator {
 
@@ -16,6 +14,7 @@ public class Generator {
 	private final GridPane board;
 	private final IntField[][] boxes;
 	private final int[][] solution;
+	private final boolean[][] isGenerated;
 	private final BoardStyler boardStyler;
 	private final BoardFiller filler;
 	private final Label correctCountLabel;
@@ -23,16 +22,18 @@ public class Generator {
 	public Generator(int size, int emptyBoxes) {
 		this.size = size;
 
+		isGenerated = new boolean[size][size];
 		board = new GridPane();
 		prepareBoard();
 		boxes = new IntField[size][size];
-		boardStyler = new BoardStyler(boxes, board.widthProperty(), board.heightProperty());
+		boardStyler = new BoardStyler(boxes, isGenerated, board.widthProperty(), board.heightProperty());
 		filler = new BoardFiller(boxes, emptyBoxes);
 		correctCountLabel = new Label();
 
 		board.add(correctCountLabel, boxes.length, boxes.length);
 		initializeBoxes();
 		filler.fill();
+		fillIsGenerated();
 		boardStyler.style();
 		disableInitialDigits();
 		fillBoardWithBoxes();
@@ -42,12 +43,13 @@ public class Generator {
 
 	public Generator(GameState state) {
 		solution = state.getSolution();
+		isGenerated = state.getIsGenerated();
 		
 		size = solution.length;
 		board = new GridPane();
 		prepareBoard();
 		boxes = new IntField[size][size];
-		boardStyler = new BoardStyler(boxes, board.widthProperty(), board.heightProperty());
+		boardStyler = new BoardStyler(boxes, isGenerated, board.widthProperty(), board.heightProperty());
 		filler = null;
 		correctCountLabel = new Label();
 
@@ -58,7 +60,16 @@ public class Generator {
 		addBoxesInputListener();
 		fillBoardWithBoxes();
 	}
-	
+
+
+	private void fillIsGenerated() {
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
+				if (boxes[row][col].getValue() != 0)
+					isGenerated[row][col] = true;
+			}
+		}
+	}
 	
 	private void prepareBoard() {
 		board.setVgap(0);
@@ -94,31 +105,38 @@ public class Generator {
 	}
 	
 	private void disableInitialDigits() {
-		Arrays.stream(boxes)
-				.flatMap(Arrays::stream)
-				.filter(field -> !isBlank(field.getText()))
-				.forEach(blankBox -> {
-					blankBox.setEditable(false);
-					blankBox.setMouseTransparent(true);
-					blankBox.setFocusTraversable(false);
-				});
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
+				IntField box = boxes[row][col];
+				
+				if (isGenerated[row][col]) {
+					box.setEditable(false);
+					box.setMouseTransparent(true);
+					box.setFocusTraversable(false);
+				}
+			}
+		}
 	}
 	
 	private void addBoxesInputListener() {
-		Arrays.stream(boxes)
-			.flatMap(Arrays::stream)
-			.filter(field -> field.getValue() == 0)
-			.forEach(box -> box.textProperty().addListener(new ChangeListener<>() {
-				@Override
-				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-					if (!isValidInputValue(newValue)) {
-						box.textProperty().removeListener(this);
-						box.setText(oldValue);
-						box.textProperty().addListener(this);
-					} else
-						correctCountLabel.setText(String.valueOf(getCorrectBoxes()));
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
+				TextField box = boxes[row][col];
+				if (!isGenerated[row][col]) {
+					box.textProperty().addListener(new ChangeListener<>() {
+						@Override
+						public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+							if (!isValidInputValue(newValue)) {
+								box.textProperty().removeListener(this);
+								box.setText(oldValue);
+								box.textProperty().addListener(this);
+							} else
+								correctCountLabel.setText(String.valueOf(getCorrectBoxes()));
+						}
+					});
 				}
-			}));
+			}
+		}
 	}
 
 	private void fillBoardWithBoxes() {
@@ -158,7 +176,7 @@ public class Generator {
 	}
 	
 	public GameState getState() {
-		return new GameState(getCurrentDigits(), solution);
+		return new GameState(getCurrentDigits(), solution, isGenerated);
 	}
 
 	public GridPane getBoard() {

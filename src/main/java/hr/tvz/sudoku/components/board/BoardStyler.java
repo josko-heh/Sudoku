@@ -11,7 +11,6 @@ import javafx.scene.paint.Color;
 import java.util.Arrays;
 
 import static hr.tvz.sudoku.util.Styling.addStyle;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 class BoardStyler {
 
@@ -21,13 +20,16 @@ class BoardStyler {
 	private static final BorderWidths noBorder = new BorderWidths(1, 1, 1, 1);
 
 	private final TextField[][] boxes;
+	private final boolean[][] isGenerated;
 	private final int size;
 	private final int sizeSqrt;
 	private final ReadOnlyDoubleProperty parentWidth;
 	private final ReadOnlyDoubleProperty parentHeight;
 
-	BoardStyler(TextField[][] boxes, ReadOnlyDoubleProperty parentWidth, ReadOnlyDoubleProperty parentHeight) {
+	BoardStyler(TextField[][] boxes, boolean[][] isGenerated, 
+				ReadOnlyDoubleProperty parentWidth, ReadOnlyDoubleProperty parentHeight) {
 		this.boxes = boxes;
+		this.isGenerated = isGenerated;
 		this.parentWidth = parentWidth;
 		this.parentHeight = parentHeight;
 		
@@ -58,10 +60,14 @@ class BoardStyler {
 	}
 
 	private void setDigitsColorInFilledBoard() {
-		Arrays.stream(boxes)
-				.flatMap(Arrays::stream)
-				.filter(field -> isBlank(field.getText()))
-				.forEach(blankBox -> addStyle(blankBox, "-fx-text-fill: #0066ff;"));
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
+				TextField box = boxes[row][col];
+				if (!isGenerated[row][col]) {
+					addStyle(box, "-fx-text-fill: #0066ff;");
+				}
+			}
+		}
 	}
 	
 	// Sets size to keep 1:1 aspect ratio while resizing.

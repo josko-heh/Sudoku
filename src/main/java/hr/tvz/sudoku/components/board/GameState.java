@@ -10,10 +10,12 @@ public class GameState implements Serializable {
 	
 	private int[][] current;
 	private int[][] solution;
+	private boolean[][] isGenerated;
 
-	GameState(int[][] current, int[][] solution) {
+	GameState(int[][] current, int[][] solution, boolean[][] isGenerated) {
 		this.current = current;
 		this.solution = solution;
+		this.isGenerated = isGenerated;
 	}
 
 	public int[][] getCurrent() {
@@ -30,5 +32,13 @@ public class GameState implements Serializable {
 
 	public void setSolution(int[][] solution) {
 		this.solution = solution;
+	}
+
+	public boolean[][] getIsGenerated() {
+		return isGenerated;
+	}
+
+	public void setIsGenerated(boolean[][] isGenerated) {
+		this.isGenerated = isGenerated;
 	}
 }
