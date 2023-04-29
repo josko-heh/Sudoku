@@ -41,7 +41,7 @@ public class Generator {
 		addBoxesInputListener();
 	}
 
-	public Generator(GameState state) {
+	public Generator(GameState.BoardState state) {
 		solution = state.getSolution();
 		isGenerated = state.getIsGenerated();
 		
@@ -176,8 +176,8 @@ public class Generator {
 		return current;
 	}
 	
-	public GameState getState() {
-		return new GameState(getCurrentDigits(), solution, isGenerated);
+	public GameState.BoardState getState() {
+		return new GameState.BoardState(getCurrentDigits(), solution, isGenerated);
 	}
 
 	public GridPane getBoard() {

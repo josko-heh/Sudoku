@@ -1,7 +1,6 @@
 package hr.tvz.sudoku.control;
 
 import hr.tvz.sudoku.components.board.GameState;
-import hr.tvz.sudoku.components.board.Generator;
 
 import java.io.*;
 import java.util.Optional;
@@ -25,12 +24,11 @@ public class SaveHandler {
 		}
 	}
 
-	public static Optional<Generator> load() {
+	public static Optional<GameState> load() {
 		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SAVE_GAME_FILE_NAME)))
 		{
 			GameState loadedState = (GameState) ois.readObject();
-
-			return Optional.of(new Generator(loadedState));
+			return Optional.of(loadedState);
 		} catch (IOException | ClassNotFoundException | ClassCastException e) {
 			e.printStackTrace();
 			showMessage("Load", "Failed to load the game!", e.getMessage());

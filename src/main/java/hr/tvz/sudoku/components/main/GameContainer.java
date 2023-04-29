@@ -1,5 +1,6 @@
 package hr.tvz.sudoku.components.main;
 
+import hr.tvz.sudoku.components.board.GameState;
 import hr.tvz.sudoku.components.board.Generator;
 import hr.tvz.sudoku.control.SaveHandler;
 import hr.tvz.sudoku.documentation.DocumentationGenerator;
@@ -11,7 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
-import static hr.tvz.sudoku.components.main.Timer.getElapsedTime;
+import java.time.Instant;
 
 public class GameContainer {
 	
@@ -24,25 +25,34 @@ public class GameContainer {
 	public Pane generate() {
 		BorderPane pane = new BorderPane();
 
+		/* Time */
+		Timer timer = new Timer();
+		HBox elapsedTime = new HBox(new Label("Elapsed time: "), timer.getElapsedTimeLabel());
+
+		Label currTimeLabel = new Label();
+		Thread currTimeThread = new CurrentTimeThread(currTimeLabel);
+		HBox currTime = new HBox(new Label("Current time: "), currTimeLabel);
+		currTimeThread.start();
+
+		VBox time = new VBox(currTime, elapsedTime);
+		
+		/* Buttons */
 		Button saveButton = new Button("Save");
-		saveButton.setOnAction(event -> SaveHandler.save(generator.getState()));
+		saveButton.setOnAction(event -> SaveHandler.save(new GameState(generator.getState(), timer.getElapsedTime())));
+		
 		Button loadButton = new Button("Load");
-		loadButton.setOnAction(event -> SaveHandler.load().ifPresent(loadedGenerator -> {
-			generator = loadedGenerator;
+		loadButton.setOnAction(event -> SaveHandler.load().ifPresent(gameState -> {
+			timer.setStart(Instant.now().minus(gameState.getElapsedTime()));
+			
+			generator = new Generator(gameState.getBoardState());
 			pane.setCenter(generator.getBoard());
 		}));
+		
 		Button docButton = new Button("Documentation");
 		docButton.setOnAction(event -> DocumentationGenerator.generate());
 
 		ToolBar toolBar = new ToolBar(saveButton, loadButton, docButton);
 
-		HBox elapsedTime = new HBox(new Label("Elapsed time: "), getElapsedTime());
-		Label currTimeLabel = new Label();
-		Thread currTimeThread = new Timer.CurrentTimeThread(currTimeLabel);
-		HBox currTime = new HBox(new Label("Current time: "), currTimeLabel);
-		currTimeThread.start();
-		
-		VBox time = new VBox(currTime, elapsedTime);
 
 		pane.setCenter(generator.getBoard());
 		pane.setTop(toolBar);
