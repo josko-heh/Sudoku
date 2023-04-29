@@ -1,4 +1,4 @@
-package hr.tvz.sudoku.documentation;
+package hr.tvz.sudoku.components.main.documentation;
 
 import java.io.FileWriter;
 import java.io.IOException;

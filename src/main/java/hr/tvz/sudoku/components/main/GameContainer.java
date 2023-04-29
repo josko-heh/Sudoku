@@ -3,7 +3,7 @@ package hr.tvz.sudoku.components.main;
 import hr.tvz.sudoku.components.board.GameState;
 import hr.tvz.sudoku.components.board.Generator;
 import hr.tvz.sudoku.control.SaveHandler;
-import hr.tvz.sudoku.documentation.DocumentationGenerator;
+import hr.tvz.sudoku.components.main.documentation.DocumentationGenerator;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
