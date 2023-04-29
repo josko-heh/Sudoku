@@ -4,9 +4,14 @@ import hr.tvz.sudoku.components.board.Generator;
 import hr.tvz.sudoku.control.SaveHandler;
 import hr.tvz.sudoku.documentation.DocumentationGenerator;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+
+import static hr.tvz.sudoku.components.main.Timer.getElapsedTime;
 
 public class GameContainer {
 	
@@ -31,8 +36,17 @@ public class GameContainer {
 
 		ToolBar toolBar = new ToolBar(saveButton, loadButton, docButton);
 
+		HBox elapsedTime = new HBox(new Label("Elapsed time: "), getElapsedTime());
+		Label currTimeLabel = new Label();
+		Thread currTimeThread = new Timer.CurrentTimeThread(currTimeLabel);
+		HBox currTime = new HBox(new Label("Current time: "), currTimeLabel);
+		currTimeThread.start();
+		
+		VBox time = new VBox(currTime, elapsedTime);
+
 		pane.setCenter(generator.getBoard());
 		pane.setTop(toolBar);
+		pane.setBottom(time);
 		
 		return pane;
 	}
