@@ -14,6 +14,8 @@ import javafx.scene.layout.VBox;
 
 import java.time.Instant;
 
+import static hr.tvz.sudoku.components.main.replay.ReplayXmlUtil.createReplayFiles;
+
 public class GameContainer {
 	
 	private Generator generator;
@@ -51,7 +53,10 @@ public class GameContainer {
 		Button docButton = new Button("Documentation");
 		docButton.setOnAction(event -> DocumentationGenerator.generate());
 
-		ToolBar toolBar = new ToolBar(saveButton, loadButton, docButton);
+		Button replayButton = new Button("Save replay");
+		replayButton.setOnAction(event -> createReplayFiles(generator.getMoves(), generator.getInitialState()));
+		
+		ToolBar toolBar = new ToolBar(saveButton, loadButton, docButton, replayButton);
 
 
 		pane.setCenter(generator.getBoard());

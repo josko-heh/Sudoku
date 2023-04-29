@@ -6,7 +6,7 @@ import java.time.Duration;
 
 public class GameState implements Serializable {
 
-	static class BoardState implements Serializable {
+	public static class BoardState implements Serializable {
 		@Serial
 		private static final long serialVersionUID = -2863663855950940270L;
 		

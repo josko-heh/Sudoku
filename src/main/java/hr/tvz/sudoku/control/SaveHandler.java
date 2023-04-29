@@ -35,4 +35,11 @@ public class SaveHandler {
 			return Optional.empty();
 		}
 	}
+
+	public static void save(GameState.BoardState state, String fileName) throws IOException {
+		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName)))
+		{
+			oos.writeObject(state);
+		}
+	}
 }

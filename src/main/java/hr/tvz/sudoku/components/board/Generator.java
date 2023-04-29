@@ -7,6 +7,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Generator {
 
@@ -18,6 +21,8 @@ public class Generator {
 	private final BoardStyler boardStyler;
 	private final BoardFiller filler;
 	private final Label correctCountLabel;
+	private final GameState.BoardState initialState;
+	private final List<GameMove> moves = new ArrayList<>();
 
 	public Generator(int size, int emptyBoxes) {
 		this.size = size;
@@ -38,10 +43,12 @@ public class Generator {
 		disableInitialDigits();
 		fillBoardWithBoxes();
 		solution = filler.getSolution();
+		initialState = new GameState.BoardState(getCurrentDigits(), solution, isGenerated);
 		addBoxesInputListener();
 	}
 
 	public Generator(GameState.BoardState state) {
+		initialState = state;
 		solution = state.getSolution();
 		isGenerated = state.getIsGenerated();
 		
@@ -124,6 +131,8 @@ public class Generator {
 			for (int col = 0; col < size; col++) {
 				TextField box = boxes[row][col];
 				if (!isGenerated[row][col]) {
+					final int finalRow = row;
+					final int finalCol = col;
 					box.textProperty().addListener(new ChangeListener<>() {
 						@Override
 						public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -131,8 +140,10 @@ public class Generator {
 								box.textProperty().removeListener(this);
 								box.setText(oldValue);
 								box.textProperty().addListener(this);
-							} else
+							} else {
 								correctCountLabel.setText(String.valueOf(getCorrectBoxes()));
+								moves.add(new GameMove(Integer.parseInt(newValue), finalRow, finalCol));
+							}
 						}
 					});
 				}
@@ -180,7 +191,15 @@ public class Generator {
 		return new GameState.BoardState(getCurrentDigits(), solution, isGenerated);
 	}
 
+	public List<GameMove> getMoves() {
+		return moves;
+	}
+
 	public GridPane getBoard() {
 		return board;
+	}
+
+	public GameState.BoardState getInitialState() {
+		return initialState;
 	}
 }

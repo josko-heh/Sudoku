@@ -35,4 +35,6 @@ build/
 .DS_Store
 
 *save*.bin
+initialState.bin
 documentation.html
+moves.xml
