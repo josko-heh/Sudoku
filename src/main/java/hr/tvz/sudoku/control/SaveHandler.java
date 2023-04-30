@@ -36,6 +36,18 @@ public class SaveHandler {
 		}
 	}
 
+	public static Optional<GameState.BoardState> load(String fileName) {
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
+			GameState.BoardState loadedState = (GameState.BoardState) ois.readObject();
+			return Optional.of(loadedState);
+		} catch (IOException | ClassNotFoundException | ClassCastException e) {
+			e.printStackTrace();
+			showMessage("Load", "Failed to load " + fileName + " file!", e.getMessage());
+			return Optional.empty();
+		}
+	}
+
+
 	public static void save(GameState.BoardState state, String fileName) throws IOException {
 		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName)))
 		{

@@ -69,6 +69,11 @@ public class Generator {
 		correctCountLabel.setText(String.valueOf(getCorrectBoxes()));
 	}
 
+	public void playMoves(List<GameMove> moves) {
+		for (GameMove move : moves) {
+			boxes[move.getRow()][move.getCol()].setValue(move.getNumber());
+		}
+	}
 
 	private void fillIsGenerated() {
 		for (int row = 0; row < size; row++) {

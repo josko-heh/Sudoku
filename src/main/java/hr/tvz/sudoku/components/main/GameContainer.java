@@ -2,8 +2,8 @@ package hr.tvz.sudoku.components.main;
 
 import hr.tvz.sudoku.components.board.GameState;
 import hr.tvz.sudoku.components.board.Generator;
-import hr.tvz.sudoku.control.SaveHandler;
 import hr.tvz.sudoku.components.main.documentation.DocumentationGenerator;
+import hr.tvz.sudoku.control.SaveHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 
 import java.time.Instant;
 
-import static hr.tvz.sudoku.components.main.replay.ReplayXmlUtil.createReplayFiles;
+import static hr.tvz.sudoku.components.replay.ReplayXmlUtil.createReplayFiles;
 
 public class GameContainer {
 	
@@ -57,7 +57,6 @@ public class GameContainer {
 		replayButton.setOnAction(event -> createReplayFiles(generator.getMoves(), generator.getInitialState()));
 		
 		ToolBar toolBar = new ToolBar(saveButton, loadButton, docButton, replayButton);
-
 
 		pane.setCenter(generator.getBoard());
 		pane.setTop(toolBar);

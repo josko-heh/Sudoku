@@ -6,6 +6,8 @@ public class GameMove {
 	private int row;
 	private int col;
 
+	public GameMove() { }
+
 	public GameMove(int number, int row, int col) {
 		this.number = number;
 		this.row = row;

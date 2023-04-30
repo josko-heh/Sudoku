@@ -3,11 +3,15 @@ package hr.tvz.sudoku.components.settings;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Box;
 import javafx.scene.text.Text;
 
 import java.util.List;
@@ -20,6 +24,7 @@ public class Settings {
 	private int selectedSize;
 	private int emptyBoxes;
 	private EventHandler<ActionEvent> onConfirm;
+	private EventHandler<ActionEvent> onReplay;
 	
 	
 	public Pane construct() {
@@ -30,13 +35,15 @@ public class Settings {
 		ChoiceBox<Integer> sizeChoice = new ChoiceBox<>(FXCollections.observableList(SIZES));
 		ChoiceBox<String> difficultyChoice = new ChoiceBox<>(FXCollections.observableList(DIFFICULTIES));
 		Button ok = new Button("Ok");
+		Button replay = new Button("Watch replay");
 		
-		pane.add(sizeLabel, 0, 0);
-		pane.add(difficultyLabel, 0, 1);
-		pane.add(sizeChoice, 1, 0);
-		pane.add(difficultyChoice, 1, 1);
-		pane.add(new Text(), 1, 3); // add empty row
-		pane.add(ok, 1, 4);
+		pane.add(replay, 0, 0);
+		pane.add(sizeLabel, 0, 1);
+		pane.add(difficultyLabel, 0, 2);
+		pane.add(sizeChoice, 1, 1);
+		pane.add(difficultyChoice, 1, 2);
+		pane.add(new Text(), 1, 4); // add empty row
+		pane.add(ok, 1, 5);
 
 		sizeChoice.getSelectionModel().selectedItemProperty()
 				.addListener((observ, old, newVal) -> selectedSize = newVal);
@@ -48,6 +55,7 @@ public class Settings {
 		difficultyChoice.getSelectionModel().selectFirst();
 		
 		ok.setOnAction(onConfirm);
+		replay.setOnAction(onReplay);
 		
 		return pane;
 	}
@@ -64,6 +72,10 @@ public class Settings {
 
 	public void setOnConfirm(EventHandler<ActionEvent> onConfirm) {
 		this.onConfirm = onConfirm;
+	}
+	
+	public void setOnReplay(EventHandler<ActionEvent> onReplay) {
+		this.onReplay = onReplay;
 	}
 	
 	public int getSize() {
