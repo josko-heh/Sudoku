@@ -14,7 +14,10 @@ public class FlowControl {
 			GameContainer gameContainer = new GameContainer(settings.getSize(), settings.getEmptyBoxes());
 			stage.setScene(new Scene(gameContainer.generate()));
 		});
-		settings.setOnReplay(event -> Replay.generate().ifPresent(replay -> stage.setScene(new Scene(replay))));
+		settings.setOnReplay(event -> Replay.generate().ifPresent(replay -> {
+				stage.setScene(new Scene(replay));
+				replay.run();
+		}));
 		
 		Scene initialScene = new Scene(settings.construct());
 		

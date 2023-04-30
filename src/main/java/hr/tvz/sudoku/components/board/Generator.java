@@ -1,13 +1,18 @@
 package hr.tvz.sudoku.components.board;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -70,9 +75,7 @@ public class Generator {
 	}
 
 	public void playMoves(List<GameMove> moves) {
-		for (GameMove move : moves) {
-			boxes[move.getRow()][move.getCol()].setValue(move.getNumber());
-		}
+		Platform.runLater(new RunMoves(moves));
 	}
 
 	private void fillIsGenerated() {
@@ -206,5 +209,28 @@ public class Generator {
 
 	public GameState.BoardState getInitialState() {
 		return initialState;
+	}
+	
+	private class RunMoves implements Runnable{
+		private final List<GameMove> moves;
+		
+		public RunMoves(List<GameMove> moves) {
+			this.moves = moves;
+		}
+
+		@Override
+		public void run() {
+			Iterator<GameMove> iter = moves.iterator();
+
+			Timeline clock = new Timeline(
+					new KeyFrame(javafx.util.Duration.ZERO, e -> {
+						GameMove move = iter.next();
+						boxes[move.getRow()][move.getCol()].setValue(move.getNumber());
+					}),
+					new KeyFrame(Duration.seconds(0.7))
+			);
+			clock.setCycleCount(moves.size());
+			clock.play();
+		}
 	}
 }
